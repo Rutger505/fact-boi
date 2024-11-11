@@ -13,17 +13,12 @@ const envSchema = z.object({
   POSTGRES_URL: z.string().min(1, "Database URL is required"),
 });
 
-const parseEnv = <T extends z.ZodSchema>(schema: T): z.infer<T> => {
-  try {
-    return schema.parse(process.env);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      throw new Error("Invalid environment variables", { cause: error.errors });
-    }
-    throw error;
-  }
-};
+const parsedEnv = envSchema.safeParse(process.env);
 
-const env = parseEnv(envSchema);
+if (!parsedEnv.success) {
+  throw new Error("Invalid environment variables", { cause: parsedEnv.error.errors});
+}
+
+const env = parsedEnv.data;
 
 export default env;
