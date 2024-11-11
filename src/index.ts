@@ -1,25 +1,33 @@
-import { Client, Events, GatewayIntentBits } from "discord.js";
+import {Client, GatewayIntentBits, Collection} from 'discord.js';
+import {loadCommands, loadRegisterCommands} from './handlers/commandHandler';
+import {loadEvents} from './handlers/eventHandler';
 
-if (!process.env.DISCORD_TOKEN) {
-  throw new Error("No token provided");
+declare module 'discord.js' {
+    export interface Client {
+        commands: Collection<string, any>;
+    }
 }
 
-// Create a new client instance with necessary intents
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,           // Required for basic guild operations
-    GatewayIntentBits.GuildMembers,     // For member-related events
-    GatewayIntentBits.GuildMessages,    // Required to receive messages
-    GatewayIntentBits.MessageContent    // Required to read message content
-  ]
+    intents: [
+        GatewayIntentBits.Guilds,           // Required for basic guild operations
+        GatewayIntentBits.GuildMembers,     // For member-related events
+        GatewayIntentBits.GuildMessages,    // Required to receive messages
+        GatewayIntentBits.MessageContent    // Required to read message content
+    ],
 });
 
-client.once(Events.ClientReady, readyClient => {
-  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
+client.commands = new Collection();
 
-client.on(Events.MessageCreate, message => {
-  console.log(`[${message.author.tag}] ${message.content}`);
-});
-
-client.login(process.env.DISCORD_TOKEN);
+// Initialize handlers
+(async () => {
+    try {
+        const commands = await loadCommands(client);
+        await loadEvents(client);
+        await loadRegisterCommands(client, commands);
+        await client.login(process.env.DISCORD_TOKEN);
+    } catch (error) {
+        console.error('Error during startup:', error);
+        process.exit(1);
+    }
+})();
