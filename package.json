@@ -7,12 +7,17 @@
     "start": "bun run src/index.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "drizzle-kit": "^0.28.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "discord.js": "^14.16.3"
+    "@neondatabase/serverless": "^0.10.3",
+    "discord.js": "^14.16.3",
+    "drizzle-orm": "^0.36.1",
+    "postgres": "^3.4.5",
+    "zod": "^3.23.8"
   }
 }
