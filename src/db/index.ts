@@ -1,14 +1,16 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
-import * as schema from "./schema";
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import * as schema from './schema';
+import  env from '../env';
 
-// TODO add env zod validation
-const client = new Pool({
-  host: process.env.POSTGRES_USER,
-  port: Number(process.env.POSTGRES_PORT),
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
-  database: process.env.POSTGRES_DATABASE
+const client = postgres({
+  host: env.POSTGRES_HOST,
+  user: env.POSTGRES_USER,
+  password: env.POSTGRES_PASSWORD,
+  database: env.POSTGRES_DATABASE,
+  port: env.POSTGRES_PORT,
 });
 
 export const db = drizzle(client, { schema });
+
+export * from './schema';

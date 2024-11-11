@@ -2,8 +2,10 @@ import { Client, Events, GatewayIntentBits } from "discord.js";
 import {db} from "./db";
 import {users} from "./db/schema.ts";
 import {eq} from "drizzle-orm";
+import env from "./env";
 
-if (!process.env.DISCORD_TOKEN) {
+
+if (!env.DISCORD_TOKEN) {
   throw new Error("No token provided");
 }
 
@@ -51,4 +53,4 @@ client.on(Events.MessageCreate, async  message => {
   }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(env.DISCORD_TOKEN);
