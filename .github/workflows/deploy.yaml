@@ -121,6 +121,8 @@ jobs:
           POSTGRES_ENV: ${{ steps.config.outputs.postgres_env }}
           POSTGRES_USERNAME: ${{ secrets.POSTGRES_USERNAME }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
         run: |
           envsubst < ./k8s/values.yaml > ./k8s/processed-values.yaml
 
