@@ -1,14 +1,6 @@
-import { Client, GatewayIntentBits, Collection, Events } from "discord.js";
-import { db } from "./db";
-import { users } from "./db";
-import { eq } from "drizzle-orm";
-import env from "./env";
+import { Client, Collection, GatewayIntentBits } from "discord.js";
 import { loadCommands, registerCommands } from "./handlers/commandHandler";
 import { loadEvents } from "./handlers/eventHandler";
-
-if (!env.DISCORD_TOKEN) {
-  throw new Error("No token provided");
-}
 
 declare module "discord.js" {
   export interface Client {
