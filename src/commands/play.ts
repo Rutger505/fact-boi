@@ -59,13 +59,15 @@ const difficultyRow =
       )
   );
 
-// Button to trigger the modal for question count input
-const numberInputButton =
+const typeRow =
   new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-    new ButtonBuilder()
-      .setCustomId("set_question_count")
-      .setLabel("Set Question Count")
-      .setStyle(ButtonStyle.Secondary)
+    new StringSelectMenuBuilder()
+      .setCustomId("type")
+      .setPlaceholder("Choose gamemode")
+      .addOptions(
+        { label: "Multiple Choice", value: "multiple" },
+        { label: "True/False", value: "boolean" }
+      )
   );
 
 // Play button to start the trivia
@@ -77,6 +79,16 @@ const playButton =
       .setStyle(ButtonStyle.Primary)
   );
 
+const userNameInput = new TextInputBuilder()
+  .setCustomId("question_count")
+  .setLabel("Set question count")
+  .setPlaceholder("Enter question count here")
+  .setStyle(TextInputStyle.Short);
+
+const userNameRow = new ActionRowBuilder<TextInputBuilder>().addComponents(
+  userNameInput
+);
+
 export const data = new SlashCommandBuilder()
   .setName("play")
   .setDescription("Play Trivia!!!");
@@ -86,37 +98,10 @@ export async function execute(
 ): Promise<void> {
   const replyOptions: InteractionReplyOptions = {
     content: "Choose a trivia category and set your difficulty to get started!",
-    components: [categoryRow, difficultyRow, playButton],
+    components: [categoryRow, difficultyRow, typeRow, playButton],
   };
 
+  console.log(difficultyRow.data);
+
   await interaction.reply(replyOptions);
-}
-
-// Handling the button interaction to open the modal for question count
-export async function handleButtonInteraction(
-  interaction: ButtonInteraction<CacheType>
-): Promise<void> {
-  if (interaction.customId === "set_question_count") {
-    const modal = new ModalBuilder()
-      .setCustomId("question_count_modal")
-      .setTitle("Set Question Count");
-
-    const questionCountInput = new TextInputBuilder()
-      .setCustomId("question_count")
-      .setLabel("Number of Questions")
-      .setPlaceholder("Enter a number")
-      .setStyle(TextInputStyle.Short);
-
-    // Add the TextInputBuilder to an ActionRowBuilder for the modal
-    const questionCountRow =
-      new ActionRowBuilder<TextInputBuilder>().addComponents(
-        questionCountInput
-      );
-
-    // Add the row to the modal
-    modal.addComponents(questionCountRow);
-
-    // Show the modal to the user
-    await interaction.showModal(modal);
-  }
 }
