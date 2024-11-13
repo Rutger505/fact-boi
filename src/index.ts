@@ -3,7 +3,7 @@ import { db } from "./db";
 import { users } from "./db";
 import { eq } from "drizzle-orm";
 import env from "./env";
-import {loadCommands, loadRegisterCommands} from './handlers/commandHandler';
+import {loadCommands, registerCommands} from './handlers/commandHandler';
 import {loadEvents} from './handlers/eventHandler';
 
 if (!env.DISCORD_TOKEN) {
@@ -65,7 +65,7 @@ client.on(Events.MessageCreate, async (message) => {
     try {
         const commands = await loadCommands(client);
         await loadEvents(client);
-        await loadRegisterCommands(commands);
+        await registerCommands(commands);
         await client.login(process.env.DISCORD_TOKEN);
     } catch (error) {
         console.error('Error during startup:', error);

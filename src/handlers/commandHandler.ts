@@ -23,7 +23,7 @@ export async function loadCommands(client: Client) {
     return commands;
 }
 
-export async function loadRegisterCommands(commands: any[]) {
+export async function registerCommands(commands: any[]) {
     const discordToken = env.DISCORD_TOKEN;
     const clientId = env.CLIENT_ID;
 
