@@ -10,7 +10,6 @@ const envSchema = z.object({
   POSTGRES_DATABASE: z.string().min(1, "Database name is required"),
   POSTGRES_HOST: z.string().min(1, "Database host is required"),
   POSTGRES_PORT: z.coerce.number().int().min(1, "Database port is required"),
-  POSTGRES_URL: z.string().min(1, "Database URL is required"),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
