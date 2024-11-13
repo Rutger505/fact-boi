@@ -1,0 +1,17 @@
+app:
+  name: "${APP_NAME}"
+  namespace: "${APP_NAME}-${APP_ENV}"
+  image:
+    repository: "${DOCKER_REPOSITORY}"
+    tag: "${DOCKER_TAG}"
+
+postgres:
+  host: postgres-service.postgres-${POSTGRES_ENV}.svc.cluster.local
+  port: 5432
+  database: "${APP_NAME}"
+  username: "${POSTGRES_USERNAME}"
+  password: "${POSTGRES_PASSWORD}"
+
+discord:
+  token: "${DISCORD_TOKEN}"
+  clientId: "${CLIENT_ID}"
