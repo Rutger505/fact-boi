@@ -65,7 +65,7 @@ client.on(Events.MessageCreate, async (message) => {
     try {
         const commands = await loadCommands(client);
         await loadEvents(client);
-        await loadRegisterCommands(client, commands);
+        await loadRegisterCommands(commands);
         await client.login(process.env.DISCORD_TOKEN);
     } catch (error) {
         console.error('Error during startup:', error);

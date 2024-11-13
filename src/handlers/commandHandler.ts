@@ -23,7 +23,7 @@ export async function loadCommands(client: Client) {
     return commands;
 }
 
-export async function loadRegisterCommands(client: Client, commands: any[]) {
+export async function loadRegisterCommands(commands: any[]) {
     const discordToken = env.DISCORD_TOKEN;
     const clientId = env.CLIENT_ID;
 
@@ -41,7 +41,7 @@ export async function loadRegisterCommands(client: Client, commands: any[]) {
     console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
     try {
-        let data: APIApplicationCommand[] = [];
+        let data: APIApplicationCommand[];
 
         console.log('Registering commands globally...');
         data = await rest.put(
