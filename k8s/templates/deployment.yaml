@@ -17,7 +17,7 @@ spec:
       initContainers:
       - name: {{ .Values.app.name }}-init
         image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
-        command: ["sh", "-c", "drizzle-kit push"]
+        command: ["sh", "-c", "bunx drizzle-kit push"]
         envFrom:
           - configMapRef:
               name: {{ .Values.app.name }}-config
