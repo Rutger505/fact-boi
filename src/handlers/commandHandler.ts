@@ -1,6 +1,7 @@
 import { Client, REST, Routes } from 'discord.js';
 import { readdir } from 'fs/promises';
 import { join } from 'path';
+import env from "../env";
 import type { APIApplicationCommand } from 'discord-api-types/v10';
 
 export async function loadCommands(client: Client) {
@@ -23,19 +24,19 @@ export async function loadCommands(client: Client) {
 }
 
 export async function loadRegisterCommands(client: Client, commands: any[]) {
-    const token = process.env.DISCORD_TOKEN;
-    const clientId = process.env.CLIENT_ID;
+    const discordToken = env.DISCORD_TOKEN;
+    const clientId = env.CLIENT_ID;
 
-    if (!token || !clientId) {
+    if (!discordToken || !clientId) {
         console.error('Environment variables check:', {
-            hasToken: !!token,
+            hasToken: !!discordToken,
             hasClientId: !!clientId
         });
         throw new Error('Missing required environment variables (TOKEN or CLIENT_ID)');
     }
 
     console.log('Initializing REST client...');
-    const rest = new REST().setToken(token);
+    const rest = new REST().setToken(discordToken);
 
     console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
