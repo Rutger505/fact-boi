@@ -1,6 +1,6 @@
-import {Client, GatewayIntentBits, Collection} from 'discord.js';
+import {Client, GatewayIntentBits, Collection,  Events} from 'discord.js';
 import { db } from "./db";
-import { users } from "./db/schema.ts";
+import { users } from "./db";
 import { eq } from "drizzle-orm";
 import env from "./env";
 import {loadCommands, loadRegisterCommands} from './handlers/commandHandler';
