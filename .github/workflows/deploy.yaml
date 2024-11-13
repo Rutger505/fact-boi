@@ -13,12 +13,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/blackjack
-  APP_NAME: blackjack
+  DOCKER_REPOSITORY: rutger505/fact-boi
+  APP_NAME: fact-boi
 
 jobs:
   build-docker-image:
-    name: Build front-end Docker image
+    name: Build Docker image
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.config.outputs.tag }}
@@ -53,9 +53,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.DOCKER_IMAGE }}:${{ steps.config.outputs.tag }}
-          cache-from: type=registry,ref=${{ env.DOCKER_IMAGE }}:cache
-          cache-to: type=registry,ref=${{ env.DOCKER_IMAGE }}:cache,mode=max
+          tags: ${{ env.DOCKER_REPOSITORY }}:${{ steps.config.outputs.tag }}
+          cache-from: type=registry,ref=${{ env.DOCKER_REPOSITORY }}:cache
+          cache-to: type=registry,ref=${{ env.DOCKER_REPOSITORY }}:cache,mode=max
 
   deploy-to-kubernetes:
     name: Deploy to Kubernetes
@@ -70,7 +70,6 @@ jobs:
 
     environment:
       name: ${{ matrix.environment }}
-      url: https://${{ steps.config.outputs.ingress_host }}
 
     steps:
       - name: Checkout repository
@@ -80,34 +79,27 @@ jobs:
         id: config
         run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            INGRESS_HOST=${{ vars.BASE_DOMAIN }}
-            CLUSTER_ISSUER_NAME=letsencrypt-production
-            POSTGRES_NAMESPACE=postgres-production
+            LETSENCRYPT_ENV="production"
+            POSTGRES_ENV="production"
           else
-            INGRESS_HOST=${{ github.sha }}.${{ vars.BASE_DOMAIN }}
-            CLUSTER_ISSUER_NAME=letsencrypt-staging
-            POSTGRES_NAMESPACE=postgres-test
+            LETSENCRYPT_ENV="staging"
+            POSTGRES_ENV="test"
           fi
           
-          echo "Setting ingress host to $INGRESS_HOST"
-          echo "ingress_host=$INGRESS_HOST" >> $GITHUB_OUTPUT
+          echo "Setting letsencrypt_env to $LETSENCRYPT_ENV"
+          echo "letsencrypt_env=$LETSENCRYPT_ENV" >> $GITHUB_OUTPUT
           
-          echo "Setting cluster issuer name to $CLUSTER_ISSUER_NAME"
-          echo "cluster_issuer_name=$CLUSTER_ISSUER_NAME" >> $GITHUB_OUTPUT
-          
-          echo "Setting postgres_namespace to $POSTGRES_NAMESPACE"
-          echo "postgres_namespace=$POSTGRES_NAMESPACE" >> $GITHUB_OUTPUT
-          
-          POSTGRES_DATABASE=blackjack
-          echo "Settings POSTGRES_DATABASE to $POSTGRES_DATABASE"
-          echo "POSTGRES_DATABASE=$POSTGRES_DATABASE" >> $GITHUB_OUTPUT
+          echo "Setting postgres_env to $POSTGRES_ENV"
+          echo "postgres_env=$POSTGRES_ENV" >> $GITHUB_OUTPUT
           
           NAMESPACE=$APP_NAME-${{ matrix.environment }}
           echo "Setting namespace to $NAMESPACE"
           echo "namespace=$NAMESPACE" >> $GITHUB_OUTPUT
 
-      - name: Install envsubst
-        run: sudo apt-get update && sudo apt-get install -y gettext-base
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.16.2'
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
@@ -120,30 +112,23 @@ jobs:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBECONFIG }}
 
-      - name: Insert environment variables into Kubernetes files
+      - name: Process values file with envsubst
         env:
-          NAMESPACE: ${{ steps.config.outputs.namespace }}
-          TAG: ${{ needs.build-docker-image.outputs.tag }}
-          INGRESS_HOST: ${{ steps.config.outputs.ingress_host }}
-          CLUSTER_ISSUER_NAME: ${{ steps.config.outputs.cluster_issuer_name }}
-          BASE_URL: https://${{ steps.config.outputs.ingress_host }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          APP_NAME: ${{ env.APP_NAME }}
+          APP_ENV: ${{ matrix.environment }}
+          DOCKER_REPOSITORY: ${{ needs.build-docker-image.outputs.tag }}
+          POSTGRES_ENV: ${{ steps.config.outputs.postgres_env }}
+          POSTGRES_USERNAME: ${{ secrets.POSTGRES_USERNAME }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_NAMESPACE: ${{ steps.config.outputs.postgres_namespace }}
-          POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE }}
-          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
         run: |
-          FILES=$(ls k8s/*.yaml | tr '\n' ' ')
-          
-          for FILE in $FILES; do
-            echo "Processing $FILE"
-            envsubst < $FILE > /tmp/envsubst || exit 1
-            mv /tmp/envsubst $FILE || exit 1
-          done
+          envsubst < ./k8s/values.yaml > ./k8s/processed-values.yaml
 
-      - name: Deploy to Kubernetes
-        uses: Azure/k8s-deploy@v5
-        with:
-          namespace: ${{ steps.config.outputs.namespace }}
-          manifests: |
-            k8s/
+      - name: Deploy Helm Chart
+        run: |
+          helm upgrade --install  \
+            ${{ env.APP_NAME }}-${{ matrix.environment }}  \
+            ./k8s \
+            -f ./k8s/processed-values.yaml \
+            --namespace ${{ steps.config.outputs.namespace }} \
+            --create-namespace \
+            --wait

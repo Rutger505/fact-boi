@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  APP_NAME: blackjack
+  APP_NAME: fact-boi
 
 jobs:
   cleanup:

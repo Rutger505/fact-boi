@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ${APP_NAME}-config
-  namespace: ${NAMESPACE}
-data:
-  AUTH_TRUST_HOST: "true"
-  AUTH_URL: "${BASE_URL}"
-  EXAMPLE_ENV_VAR: "example"
