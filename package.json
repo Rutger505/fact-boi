@@ -17,7 +17,10 @@
     "@neondatabase/serverless": "^0.10.3",
     "discord.js": "^14.16.3",
     "drizzle-orm": "^0.36.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "postgres": "^3.4.5",
+    "prettier": "^3.3.3",
     "zod": "^3.23.8"
   }
 }
