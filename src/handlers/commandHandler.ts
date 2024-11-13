@@ -27,14 +27,6 @@ export async function registerCommands(commands: any[]) {
     const discordToken = env.DISCORD_TOKEN;
     const clientId = env.CLIENT_ID;
 
-    if (!discordToken || !clientId) {
-        console.error('Environment variables check:', {
-            hasToken: !!discordToken,
-            hasClientId: !!clientId
-        });
-        throw new Error('Missing required environment variables (TOKEN or CLIENT_ID)');
-    }
-
     console.log('Initializing REST client...');
     const rest = new REST().setToken(discordToken);
 
