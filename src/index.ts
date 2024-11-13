@@ -28,38 +28,6 @@ const client = new Client({
 
 client.commands = new Collection();
 
-client.on(Events.MessageCreate, async (message) => {
-  if (message.author.bot) return;
-
-  console.log(`[${message.author.tag}] ${message.content}`);
-
-  try {
-    // Check if user already exists
-    const existingUser = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, Number(message.author.id)))
-      .limit(1);
-
-    if (existingUser.length === 0) {
-      // User doesn't exist, create new user
-      const newUser = await db
-        .insert(users)
-        .values({
-          id: Number(message.author.id), // Discord IDs are snowflakes (too large for int), so we might need to adjust the schema
-          displayName: message.author.username,
-        })
-        .returning();
-
-      console.log(`Created new user: ${newUser[0].displayName}`);
-    }
-
-    console.log(`[${message.author.tag}] ${message.content}`);
-  } catch (error) {
-    console.error("Error handling message:", error);
-  }
-});
-
 // Initialize handlers
 (async () => {
   try {
