@@ -2,19 +2,18 @@ import {
   ActionRowBuilder,
   StringSelectMenuBuilder,
   SlashCommandBuilder,
-  ModalBuilder,
-  TextInputBuilder,
-  TextInputStyle,
   ButtonBuilder,
   ButtonStyle,
   CommandInteraction,
-  ButtonInteraction,
+  StringSelectMenuInteraction,
 } from "discord.js";
 import type {
   MessageActionRowComponentBuilder,
   InteractionReplyOptions,
   CacheType,
 } from "discord.js"; // Importing type-only
+
+const userSelections = new Map(); // Store user selections
 
 // Create the first ActionRow with the trivia category select menu
 const categoryRow =
@@ -24,24 +23,64 @@ const categoryRow =
       .setPlaceholder("Choose a trivia category")
       .addOptions(
         {
-          label: "Science",
-          description: "Test your knowledge in Science!",
-          value: "science",
+          label: "General Knowledge",
+          description: "Test your knowledge in General Knowledge!",
+          value: "9",
         },
         {
-          label: "History",
-          description: "How well do you know history?",
-          value: "history",
+          label: "Books",
+          description: "How well do you know Books?",
+          value: "10",
+        },
+        {
+          label: "Films",
+          description: "Show off your Film skills!",
+          value: "11",
+        },
+        {
+          label: "Music",
+          description: "Questions about music!",
+          value: "12",
+        },
+        {
+          label: "Video Games",
+          description: "Questions about video games!",
+          value: "15",
+        },
+        {
+          label: "Nature",
+          description: "Questions about Nature!",
+          value: "17",
+        },
+        {
+          label: "Computers",
+          description: "Questions about computers!",
+          value: "18",
+        },
+        {
+          label: "Sports",
+          description: "Questions about Sports!",
+          value: "21",
         },
         {
           label: "Geography",
-          description: "Show off your geography skills!",
-          value: "geography",
+          description: "Questions about music!",
+          value: "22",
         },
         {
-          label: "Entertainment",
-          description: "Questions about movies, music, and more!",
-          value: "entertainment",
+          label: "History",
+          description: "Questions about History!",
+          value: "23",
+        },
+        {
+          label: "Politics",
+          description: "Questions about Politics!",
+          value: "24",
+        },
+        {
+          label: "Anime and Manga",
+          description: "Questions about Anime and manga!",
+          value: "31",
         }
       )
   );
@@ -59,6 +98,7 @@ const difficultyRow =
       )
   );
 
+// Create the type select menu
 const typeRow =
   new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
     new StringSelectMenuBuilder()
@@ -79,16 +119,6 @@ const playButton =
       .setStyle(ButtonStyle.Primary)
   );
 
-const userNameInput = new TextInputBuilder()
-  .setCustomId("question_count")
-  .setLabel("Set question count")
-  .setPlaceholder("Enter question count here")
-  .setStyle(TextInputStyle.Short);
-
-const userNameRow = new ActionRowBuilder<TextInputBuilder>().addComponents(
-  userNameInput
-);
-
 export const data = new SlashCommandBuilder()
   .setName("play")
   .setDescription("Play Trivia!!!");
@@ -97,11 +127,9 @@ export async function execute(
   interaction: CommandInteraction<CacheType>
 ): Promise<void> {
   const replyOptions: InteractionReplyOptions = {
-    content: "Choose a trivia category and set your difficulty to get started!",
+    content: `Choose a trivia category and set your difficulty to get started!`,
     components: [categoryRow, difficultyRow, typeRow, playButton],
   };
-
-  console.log(difficultyRow.data);
 
   await interaction.reply(replyOptions);
 }
