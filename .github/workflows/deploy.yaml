@@ -116,7 +116,8 @@ jobs:
         env:
           APP_NAME: ${{ env.APP_NAME }}
           APP_ENV: ${{ matrix.environment }}
-          DOCKER_REPOSITORY: ${{ needs.build-docker-image.outputs.tag }}
+          DOCKER_REPOSITORY: ${{ env.DOCKER_REPOSITORY }}
+          DOCKER_TAG: ${{ needs.build-docker-image.outputs.tag }}
           POSTGRES_ENV: ${{ steps.config.outputs.postgres_env }}
           POSTGRES_USERNAME: ${{ secrets.POSTGRES_USERNAME }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}

@@ -2,7 +2,7 @@ app:
   name: "${APP_NAME}"
   namespace: "${APP_NAME}-${APP_ENV}"
   image:
-    repository: ${DOCKER_REPOSITORY}
+    repository: "${DOCKER_REPOSITORY}"
     tag: "${DOCKER_TAG}"
 
 postgres:
