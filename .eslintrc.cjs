@@ -6,13 +6,17 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "prettier"
+    "prettier",
   ],
   parserOptions: {
-    ecmaVersion: "latest",
+    ecmaVersion: 2022,
     sourceType: "module",
     tsconfigRootDir: __dirname,
     project: ["./tsconfig.json"],
+  },
+  env: {
+    node: true,
+    es2022: true,
   },
   rules: {
     "prettier/prettier": "error",

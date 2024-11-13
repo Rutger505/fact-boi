@@ -3,6 +3,7 @@ import { z } from "zod";
 const envSchema = z.object({
   // Discord
   DISCORD_TOKEN: z.string().min(1, "Discord token is required"),
+  CLIENT_ID: z.string().min(1, "Client ID is required"),
 
   // Database
   POSTGRES_USER: z.string().min(1, "Database user is required"),
