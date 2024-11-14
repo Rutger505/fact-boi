@@ -16,10 +16,9 @@ export async function execute(interaction: Interaction) {
       });
     } else {
       await interaction.reply({
-        content: `Incorrect answer. ❌ The correct answer was: ${interaction.customId.replace(
-          "answer_incorrect_",
-          ""
-        )}`,
+        content: `Incorrect answer. ❌ The correct answer was: ${interaction.message.components[0].components
+          .find((c) => c.customId === "answer_correct")
+          ?.label.replace("_", " ")}`,
         ephemeral: true,
       });
     }
