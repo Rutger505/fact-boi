@@ -25,7 +25,7 @@ export async function execute(interaction: Interaction) {
   }
 
   const correctButton = buttons.find((button) =>
-    button.customId.startsWith("answer_correct")
+    button.customId?.startsWith("answer_correct")
   );
   if (!correctButton) {
     throw new Error("Correct button not found.");
