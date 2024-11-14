@@ -134,4 +134,6 @@ jobs:
             -f ./k8s/processed-values.yaml \
             --namespace ${{ steps.config.outputs.namespace }} \
             --create-namespace \
-            --wait
+            --wait \
+            --timeout 1m \
+            --atomic
