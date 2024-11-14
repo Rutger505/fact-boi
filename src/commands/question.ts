@@ -36,19 +36,6 @@ export async function execute(interaction: any) {
     .sort(() => Math.random() - 0.5)
     .map((answer: any) => he.decode(answer));
 
-  const saveQuestionPromise = db
-    .insert(questions)
-    .values({
-      category: questionData.category,
-      type: questionData.type === "multiple" ? "multiple_choice" : "boolean",
-      difficulty: questionData.difficulty as "easy" | "medium" | "hard",
-      question: questionText,
-      answers: answers,
-      incorrectAnswers: questionData.incorrect_answers,
-      correctAnswer: correctAnswer,
-    })
-    .onConflictDoNothing();
-
   // Create buttons for each answer
   const row = new ActionRowBuilder().addComponents(
     ...answers.map((answer: string) =>
@@ -67,11 +54,23 @@ export async function execute(interaction: any) {
   );
 
   // Send the question with answer buttons
-  await interaction.reply({
+  const replyMessage = await interaction.reply({
     content: `Question: ${questionText}`,
     components: [row],
     fetchReply: true,
   });
 
-  await saveQuestionPromise;
+  await db
+    .insert(questions)
+    .values({
+      messageId: replyMessage.id,
+      category: questionData.category,
+      type: questionData.type === "multiple" ? "multiple_choice" : "boolean",
+      difficulty: questionData.difficulty as "easy" | "medium" | "hard",
+      question: questionText,
+      answers: answers,
+      incorrectAnswers: questionData.incorrect_answers,
+      correctAnswer: correctAnswer,
+    })
+    .onConflictDoNothing();
 }

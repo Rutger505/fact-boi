@@ -36,6 +36,7 @@ export const users = pgTable("users", {
 
 export const questions = pgTable("questions", {
   id: serial("id").primaryKey(),
+  messageId: bigint("message_id", { mode: "number" }).notNull(), // Discord Message ID
   category: varchar("category").notNull(),
   type: questionTypeEnum("type").notNull(),
   difficulty: difficultyEnum("difficulty").notNull(),
@@ -47,13 +48,13 @@ export const questions = pgTable("questions", {
 });
 
 export const userAnswers = pgTable("user_answers", {
-  id: bigint("id", { mode: "number" }).primaryKey(),
+  id: serial("id").primaryKey(),
   userId: bigint("user_id", { mode: "number" })
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id), // Discord ID
   questionId: bigint("question_id", { mode: "number" })
     .notNull()
-    .references(() => questions.id),
+    .references(() => questions.id), // Discord Message ID
   answer: text("answer").notNull(),
   isCorrect: boolean("is_correct").notNull(),
   answeredAt: timestamp("answered_at").defaultNow().notNull(),
