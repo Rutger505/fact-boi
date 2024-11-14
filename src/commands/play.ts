@@ -5,7 +5,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
   CommandInteraction,
-  StringSelectMenuInteraction,
+  ComponentType,
 } from "discord.js";
 import type {
   MessageActionRowComponentBuilder,
@@ -123,6 +123,12 @@ export const data = new SlashCommandBuilder()
   .setName("play")
   .setDescription("Play Trivia!!!");
 
+let selectedOptions = {
+  category: "",
+  difficulty: "",
+  type: "",
+};
+
 export async function execute(
   interaction: CommandInteraction<CacheType>
 ): Promise<void> {
@@ -131,5 +137,41 @@ export async function execute(
     components: [categoryRow, difficultyRow, typeRow, playButton],
   };
 
-  await interaction.reply(replyOptions);
+  const choiceMenu = await interaction.reply(replyOptions);
+
+  const collectorSelectMenu = choiceMenu.createMessageComponentCollector({
+    componentType: ComponentType.SelectMenu,
+  });
+
+  const collectorButton = choiceMenu.createMessageComponentCollector({
+    componentType: ComponentType.Button,
+  });
+
+  collectorSelectMenu.on("collect", async (interaction) => {
+    await interaction.deferUpdate();
+
+    console.log(interaction.customId);
+    switch (interaction.customId) {
+      case "trivia_category":
+        selectedOptions.category = interaction.values[0];
+        break;
+      case "difficulty":
+        selectedOptions.difficulty = interaction.values[0];
+        break;
+      case "type":
+        selectedOptions.type = interaction.values[0];
+        break;
+    }
+
+    console.log(selectedOptions);
+  });
+
+  collectorButton.on("collect", async (interaction) => {
+    await interaction.deferUpdate();
+    if (interaction.customId === "start_button") {
+      console.log("Starting Trivia!");
+      console.log(selectedOptions);
+      // Start the trivia
+    }
+  });
 }
