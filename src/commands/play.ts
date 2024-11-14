@@ -13,8 +13,6 @@ import type {
   CacheType,
 } from "discord.js"; // Importing type-only
 
-const userSelections = new Map(); // Store user selections
-
 // Create the first ActionRow with the trivia category select menu
 const categoryRow =
   new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
