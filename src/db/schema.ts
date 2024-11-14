@@ -46,7 +46,7 @@ export const questions = pgTable("questions", {
 
 export const userAnswers = pgTable("user_answers", {
   id: bigint("id", { mode: "number" }).primaryKey(),
-  userId: varchar("user_id", { length: 20 })
+  userId: bigint("user_id", { mode: "number" })
     .notNull()
     .references(() => users.id),
   questionId: bigint("question_id", { mode: "number" })
