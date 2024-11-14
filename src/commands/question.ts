@@ -5,6 +5,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import he from "he";
+import { db, questions } from "../db";
 
 const RATE_LIMIT_CODE = 5;
 
@@ -53,9 +54,26 @@ export async function execute(interaction: any) {
   );
 
   // Send the question with answer buttons
-  await interaction.reply({
+  const replyMessage = await interaction.reply({
     content: `Question: ${questionText}`,
     components: [row],
     fetchReply: true,
   });
+
+  console.log("Message ID: ", replyMessage.id);
+  console.log("User ID: ", interaction.user.id);
+
+  await db
+    .insert(questions)
+    .values({
+      id: replyMessage.id,
+      category: questionData.category,
+      type: questionData.type === "multiple" ? "multiple_choice" : "boolean",
+      difficulty: questionData.difficulty as "easy" | "medium" | "hard",
+      question: questionText,
+      answers: answers,
+      incorrectAnswers: questionData.incorrect_answers,
+      correctAnswer: correctAnswer,
+    })
+    .onConflictDoNothing();
 }

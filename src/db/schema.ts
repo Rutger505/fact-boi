@@ -3,6 +3,7 @@ import {
   boolean,
   pgEnum,
   pgTable,
+  serial,
   text,
   timestamp,
   varchar,
@@ -34,24 +35,25 @@ export const users = pgTable("users", {
 });
 
 export const questions = pgTable("questions", {
-  id: bigint("id", { mode: "number" }).primaryKey(),
+  id: bigint("id", { mode: "number" }).primaryKey(), // Discord Message ID
   category: varchar("category").notNull(),
   type: questionTypeEnum("type").notNull(),
   difficulty: difficultyEnum("difficulty").notNull(),
-  question: text("question").notNull(),
+  question: text("question").notNull().unique(),
   answers: text("answers").array().notNull(),
+  incorrectAnswers: text("incorrect_answers").array().notNull(),
   correctAnswer: text("correct_answer").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const userAnswers = pgTable("user_answers", {
-  id: bigint("id", { mode: "number" }).primaryKey(),
+  id: serial("id").primaryKey(),
   userId: bigint("user_id", { mode: "number" })
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id), // Discord ID
   questionId: bigint("question_id", { mode: "number" })
     .notNull()
-    .references(() => questions.id),
+    .references(() => questions.id), // Discord Message ID
   answer: text("answer").notNull(),
   isCorrect: boolean("is_correct").notNull(),
   answeredAt: timestamp("answered_at").defaultNow().notNull(),
