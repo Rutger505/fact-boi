@@ -3,6 +3,7 @@ import {
   boolean,
   pgEnum,
   pgTable,
+  serial,
   text,
   timestamp,
   varchar,
@@ -34,12 +35,13 @@ export const users = pgTable("users", {
 });
 
 export const questions = pgTable("questions", {
-  id: bigint("id", { mode: "number" }).primaryKey(),
+  id: serial("id").primaryKey(),
   category: varchar("category").notNull(),
   type: questionTypeEnum("type").notNull(),
   difficulty: difficultyEnum("difficulty").notNull(),
-  question: text("question").notNull(),
+  question: text("question").notNull().unique(),
   answers: text("answers").array().notNull(),
+  incorrectAnswers: text("incorrect_answers").array().notNull(),
   correctAnswer: text("correct_answer").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

@@ -5,6 +5,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import he from "he";
+import { db, questions } from "../db";
 
 const RATE_LIMIT_CODE = 5;
 
@@ -35,6 +36,19 @@ export async function execute(interaction: any) {
     .sort(() => Math.random() - 0.5)
     .map((answer: any) => he.decode(answer));
 
+  const saveQuestionPromise = db
+    .insert(questions)
+    .values({
+      category: questionData.category,
+      type: questionData.type === "multiple" ? "multiple_choice" : "boolean",
+      difficulty: questionData.difficulty as "easy" | "medium" | "hard",
+      question: questionText,
+      answers: answers,
+      incorrectAnswers: questionData.incorrect_answers,
+      correctAnswer: correctAnswer,
+    })
+    .onConflictDoNothing();
+
   // Create buttons for each answer
   const row = new ActionRowBuilder().addComponents(
     ...answers.map((answer: string) =>
@@ -58,4 +72,6 @@ export async function execute(interaction: any) {
     components: [row],
     fetchReply: true,
   });
+
+  await saveQuestionPromise;
 }
