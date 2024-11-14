@@ -3,7 +3,6 @@ import {
   ButtonBuilder,
   SlashCommandBuilder,
   ButtonStyle,
-  Events,
 } from "discord.js";
 import he from "he";
 
