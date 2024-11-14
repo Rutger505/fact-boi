@@ -8,12 +8,11 @@ import {
 import he from "he";
 
 export const data = new SlashCommandBuilder()
-  .setName("questiontest")
-  .setDescription("gives a test response");
+  .setName("question")
+  .setDescription("gives a one random question");
 
 export async function execute(interaction: any) {
-  const api =
-    "https://opentdb.com/api.php?amount=1&category=15&difficulty=easy";
+  const api = "https://opentdb.com/api.php?amount=1";
 
   // Fetch the API
   const response = await fetch(api);
