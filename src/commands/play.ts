@@ -162,16 +162,12 @@ export async function execute(
         selectedOptions.type = interaction.values[0];
         break;
     }
-
-    console.log(selectedOptions);
   });
 
   collectorButton.on("collect", async (interaction) => {
     await interaction.deferUpdate();
     if (interaction.customId === "start_button") {
-      console.log("Starting Trivia!");
       console.log(selectedOptions);
-      // Start the trivia
     }
   });
 }
