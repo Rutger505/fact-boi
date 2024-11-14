@@ -1,4 +1,9 @@
-import { ComponentType, Events, type Interaction } from "discord.js";
+import {
+  ButtonInteraction,
+  ComponentType,
+  Events,
+  type Interaction,
+} from "discord.js";
 
 export const name = Events.InteractionCreate;
 export const once = false;
@@ -17,6 +22,15 @@ export async function execute(interaction: Interaction) {
     });
   }
 
+  const correctAnswer = findCorrectAnswer(interaction);
+
+  await interaction.reply({
+    content: `Incorrect answer! The correct answer was ${correctAnswer}.`,
+    ephemeral: true,
+  });
+}
+
+function findCorrectAnswer(interaction: ButtonInteraction) {
   const buttons = interaction.message.components[0].components.filter(
     (component) => component.type === ComponentType.Button
   );
@@ -35,9 +49,5 @@ export async function execute(interaction: Interaction) {
   if (!correctAnswer) {
     throw new Error("Correct answer not found.");
   }
-
-  await interaction.reply({
-    content: `Incorrect answer! The correct answer was ${correctAnswer}.`,
-    ephemeral: true,
-  });
+  return correctAnswer;
 }
