@@ -12,12 +12,14 @@ const psql = postgres("", {
 
 const databaseExists = await psql`
     SELECT 1 FROM pg_database WHERE datname = ${DATABASE_NAME}
-  `;
+`;
 
 if (!databaseExists.length) {
-  await psql`CREATE DATABASE ${DATABASE_NAME}`;
-
+  // For CREATE DATABASE, we need to use raw identifiers
+  await psql.unsafe(`CREATE DATABASE "${DATABASE_NAME}"`);
   console.log(`Database ${DATABASE_NAME} created`);
 } else {
   console.log(`Database ${DATABASE_NAME} already exists`);
 }
+
+await psql.end();
