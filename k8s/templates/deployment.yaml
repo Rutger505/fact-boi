@@ -15,7 +15,15 @@ spec:
     spec:
       automountServiceAccountToken: false
       initContainers:
-      - name: {{ .Values.app.name }}-init
+      - name: {{ .Values.app.name }}-create-database
+        image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+        command: ["sh", "-c", "bun create-database.ts"]
+        envFrom:
+          - configMapRef:
+              name: {{ .Values.app.name }}-config
+          - secretRef:
+              name: {{ .Values.app.name }}-secret
+      - name: {{ .Values.app.name }}-migrate
         image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
         command: ["sh", "-c", "bunx drizzle-kit push"]
         envFrom:
