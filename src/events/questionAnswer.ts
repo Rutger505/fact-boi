@@ -20,14 +20,16 @@ export async function execute(interaction: Interaction) {
       content: "Correct answer! 🎉",
       ephemeral: true,
     });
+  } else {
+    const correctAnswer = findCorrectAnswer(interaction);
+
+    await interaction.reply({
+      content: `Incorrect answer! The correct answer was ${correctAnswer}.`,
+      ephemeral: true,
+    });
   }
 
-  const correctAnswer = findCorrectAnswer(interaction);
-
-  await interaction.reply({
-    content: `Incorrect answer! The correct answer was ${correctAnswer}.`,
-    ephemeral: true,
-  });
+  await interaction.message.delete();
 }
 
 function findCorrectAnswer(interaction: ButtonInteraction) {
