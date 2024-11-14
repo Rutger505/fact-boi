@@ -50,8 +50,11 @@ export async function execute(interaction: Interaction) {
     })
     .onConflictDoNothing();
 
+  console.log("Message ID: ", interaction.message.id);
+  console.log("User ID: ", interaction.user.id);
+
   await db.insert(userAnswers).values({
-    userId: interaction.user.id as unknown as number,
+    userId: interaction.user.id as unknown as bigint,
     questionId: interaction.message.id as unknown as number,
     answer: userAnswer,
     isCorrect: isCorrectAnswer,
@@ -70,25 +73,7 @@ async function saveAnswerToDatabase({
   questionId: number;
   answer: string;
   isCorrect: boolean;
-}) {
-  // First, ensure user exists in database
-  await db
-    .insert(users)
-    .values({
-      id: userId,
-      displayName: "Unknown", // You might want to get this from Discord
-    })
-    .onConflictDoNothing();
-
-  // Then save the answer
-  await db.insert(userAnswers).values({
-    id: Date.now(), // You might want a better ID generation strategy
-    userId: BigInt(userId),
-    questionId,
-    answer,
-    isCorrect,
-  });
-}
+}) {}
 
 function findCorrectAnswer(interaction: ButtonInteraction) {
   const buttons = interaction.message.components[0].components.filter(

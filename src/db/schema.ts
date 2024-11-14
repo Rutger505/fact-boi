@@ -35,8 +35,7 @@ export const users = pgTable("users", {
 });
 
 export const questions = pgTable("questions", {
-  id: serial("id").primaryKey(),
-  messageId: bigint("message_id", { mode: "number" }).notNull(), // Discord Message ID
+  id: bigint("id", { mode: "number" }).primaryKey(), // Discord Message ID
   category: varchar("category").notNull(),
   type: questionTypeEnum("type").notNull(),
   difficulty: difficultyEnum("difficulty").notNull(),

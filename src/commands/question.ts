@@ -60,10 +60,13 @@ export async function execute(interaction: any) {
     fetchReply: true,
   });
 
+  console.log("Message ID: ", replyMessage.id);
+  console.log("User ID: ", interaction.user.id);
+
   await db
     .insert(questions)
     .values({
-      messageId: replyMessage.id,
+      id: replyMessage.id,
       category: questionData.category,
       type: questionData.type === "multiple" ? "multiple_choice" : "boolean",
       difficulty: questionData.difficulty as "easy" | "medium" | "hard",

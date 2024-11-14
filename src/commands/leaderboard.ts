@@ -7,25 +7,24 @@ export const data = new SlashCommandBuilder()
   .setDescription("Shows all users scores");
 
 export async function execute(interaction: any) {
+  const correctAnswersSQL = sql<number>`sum(case when ${userAnswers.isCorrect} then 1 else 0 end)`;
+
   // Get user scores using SQL aggregation
   const leaderboard = await db
     .select({
       userId: users.id,
       displayName: users.displayName,
       totalAnswers: sql<number>`count(${userAnswers.id})`.as("totalAnswers"),
-      correctAnswers:
-        sql<number>`sum(case when ${userAnswers.isCorrect} then 1 else 0 end)`.as(
-          "correctAnswers"
-        ),
+      correctAnswers: correctAnswersSQL.as("correctAnswers"),
       accuracy:
-        sql<number>`round(sum(case when ${userAnswers.isCorrect} then 1 else 0 end)::numeric / count(${userAnswers.id}) * 100, 1)`.as(
+        sql<number>`round(${correctAnswersSQL}::numeric / count(${userAnswers.id}) * 100, 1)`.as(
           "accuracy"
         ),
     })
     .from(users)
     .leftJoin(userAnswers, sql`${users.id} = ${userAnswers.userId}`)
     .groupBy(users.id, users.displayName)
-    .orderBy(desc(sql`correctAnswers`))
+    .orderBy(desc(correctAnswersSQL)) // Use the SQL expression directly, not the alias
     .limit(10);
 
   if (leaderboard.length === 0) {
@@ -51,7 +50,6 @@ export async function execute(interaction: any) {
   await interaction.reply({ embeds: [embed] });
 }
 
-// Helper function to get position emoji
 function getPosition(position: number): string {
   switch (position) {
     case 1:
