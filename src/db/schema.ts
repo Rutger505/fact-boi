@@ -35,7 +35,7 @@ export const users = pgTable("users", {
 
 export const questions = pgTable("questions", {
   id: bigint("id", { mode: "number" }).primaryKey(),
-  category: varchar("category", { length: 100 }).notNull(),
+  category: varchar("category").notNull(),
   type: questionTypeEnum("type").notNull(),
   difficulty: difficultyEnum("difficulty").notNull(),
   question: text("question").notNull(),
