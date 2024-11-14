@@ -135,3 +135,5 @@ jobs:
             --namespace ${{ steps.config.outputs.namespace }} \
             --create-namespace \
             --wait
+            --timeout 1m \
+            --atomic
