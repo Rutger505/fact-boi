@@ -10,21 +10,14 @@ const psql = postgres("", {
   password: env.POSTGRES_PASSWORD,
 });
 
-try {
-  const databaseExists = await psql`
-      SELECT 1 FROM pg_database WHERE datname = ${DATABASE_NAME}
-    `;
+const databaseExists = await psql`
+    SELECT 1 FROM pg_database WHERE datname = ${DATABASE_NAME}
+  `;
 
-  if (!databaseExists.length) {
-    await psql`CREATE DATABASE ${DATABASE_NAME}`;
+if (!databaseExists.length) {
+  await psql`CREATE DATABASE ${DATABASE_NAME}`;
 
-    console.log(`Database ${DATABASE_NAME} created`);
-  } else {
-    console.log(`Database ${DATABASE_NAME} already exists`);
-  }
-} catch (error) {
-  console.error(error);
-  process.exit(1);
+  console.log(`Database ${DATABASE_NAME} created`);
+} else {
+  console.log(`Database ${DATABASE_NAME} already exists`);
 }
-
-process.exit(0);
