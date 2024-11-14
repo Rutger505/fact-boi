@@ -1,10 +1,12 @@
 import {
   ActionRowBuilder,
   ButtonBuilder,
-  SlashCommandBuilder,
   ButtonStyle,
+  SlashCommandBuilder,
 } from "discord.js";
 import he from "he";
+
+const RATE_LIMIT_CODE = 5;
 
 export const data = new SlashCommandBuilder()
   .setName("question")
@@ -16,6 +18,13 @@ export async function execute(interaction: any) {
   // Fetch the API
   const response = await fetch(api);
   const data = await response.json();
+
+  if (data.response_code === RATE_LIMIT_CODE) {
+    await interaction.reply(
+      "Please wait 5 seconds before sending another command."
+    );
+    return;
+  }
 
   // Extract and structure the question and answers
   const questionData = data.results[0];
